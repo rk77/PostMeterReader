@@ -182,5 +182,58 @@ public class DbfConstant {
             put(BZ, "抄表器");
             put(YCBH, "未知");
         }};
+
+        public final Map<Integer, String> METER_READ_SYMBOL_CODE = new HashMap<Integer, String>() {{
+            put(1, "正常");
+            put(2, "漏抄");
+            put(3, "估抄");
+            put(4, "补抄");
+            put(5, "未抄");
+            put(9, "其它");
+        }};
+
+        public final Map<Integer, String> METER_READ_CATEGORY_CODE = new HashMap<Integer, String>() {{
+            put(0, "正常抄表");
+            put(1, "非周期及业扩变更结算抄表");
+            put(2, "补抄");
+            put(3, "政策性退补");
+            put(4, "监抄");
+            put(5, "试算");
+        }};
+
+        public final Map<Integer, String> METER_READ_WAY_CODE = new HashMap<Integer, String>() {{
+            put(10, "现场单户抄表");
+            put(11, "现场单户手工（抄表卡）");
+            put(12, "现场单户普通抄表器");
+            put(13, "现场单户远红外抄表器");
+            put(20, "现场集抄");
+            put(21, "现场集抄普通抄表器");
+            put(22, "现场集抄远红外抄表器");
+            put(23, "现场集抄无线抄表器");
+            put(24, "现场集抄低压载波集抄");
+            put(30, "遥抄");
+            put(31, "负控遥抄");
+            put(32, "低压遥抄");
+            put(33, "配变遥抄");
+            put(34, "厂站遥抄");
+            put(99, "其它");
+
+        }};
+
+        public final Map<Integer, String> METER_READ_STATUS_CODE = new HashMap<Integer, String>() {{
+            put(0, "正常");
+            put(1, "翻转");
+            put(2, "倒走");
+            put(3, "倒走并翻转");
+        }};
+
+        public final Map<Integer, String> METER_READ_ABNORMAL_CODE = new HashMap<Integer, String>() {{
+            put(0, "无");
+            put(10, "分时示数不平");
+            put(11, "箱烂");
+            put(12, "违约");
+            put(13, "无表");
+            put(14, "电表烧表");
+        }};
     }
 }
