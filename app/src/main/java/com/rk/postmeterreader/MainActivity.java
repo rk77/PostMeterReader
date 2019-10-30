@@ -96,7 +96,7 @@ public class MainActivity extends Activity {
                 break;
             }
 
-            reader.writeItem(62, DbfConstant.Colume.JCBZ, "1");
+            reader.writeItem(3, DbfConstant.Colume.CBQDMC, "鼎信股份通信");
             // By now, we have iterated through all of the rows
         } catch (DBFException e) {
             Log.e(TAG, "DBFException, e: " + e.getMessage());
