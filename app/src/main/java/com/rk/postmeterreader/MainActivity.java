@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.linuxense.javadbf.DBFDataType;
 import com.linuxense.javadbf.DBFException;
 import com.linuxense.javadbf.DBFField;
+import com.linuxense.javadbf.DBFReadAndWrite;
 import com.linuxense.javadbf.DBFReader;
 import com.linuxense.javadbf.DBFUtils;
 import com.linuxense.javadbf.DBFWriter;
@@ -50,7 +51,7 @@ public class MainActivity extends Activity {
 
     private void readDbf() {
         Log.i(TAG, "readDbf");
-        DBFReader reader = null;
+        DBFReadAndWrite reader = null;
         try {
             String dbfPath = Environment.getExternalStorageDirectory() + "/" + "nwcb.dbf";
             File dbfFile = new File(dbfPath);
@@ -59,7 +60,7 @@ public class MainActivity extends Activity {
                 return;
             }
             // create a DBFReader object
-            reader = new DBFReader(new FileInputStream(dbfPath), Charset.forName("GBK"));
+            reader = new DBFReadAndWrite(new FileInputStream(dbfPath), Charset.forName("GBK"), dbfPath);
             //reader.setCharactersetName("GBK"); // fix chinese messy code
             // get the field count if you want for some reasons like the following
             int numberOfFields = reader.getFieldCount();
@@ -94,10 +95,14 @@ public class MainActivity extends Activity {
                 mContentTextView.setText(rowObjects[columeIdx].toString());
                 break;
             }
+
+            reader.writeItem(62, DbfConstant.Colume.JCBZ, "1");
             // By now, we have iterated through all of the rows
         } catch (DBFException e) {
+            Log.e(TAG, "DBFException, e: " + e.getMessage());
             e.printStackTrace();
         } catch (IOException e) {
+            Log.e(TAG, "IOException, e: " + e.getMessage());
             e.printStackTrace();
         } finally {
             DBFUtils.close(reader);
@@ -183,7 +188,7 @@ public class MainActivity extends Activity {
                     @Override
                     public void onFinish() {
                         readDbf();
-                        dbfWrite();
+                        //dbfWrite();
                     }
                     @Override
                     public void onDeny(String permission, int position) {
