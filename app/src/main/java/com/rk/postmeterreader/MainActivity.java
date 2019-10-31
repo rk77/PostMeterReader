@@ -7,6 +7,8 @@ import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.linuxense.javadbf.DBFDataType;
@@ -16,6 +18,9 @@ import com.linuxense.javadbf.DBFReadAndWrite;
 import com.linuxense.javadbf.DBFReader;
 import com.linuxense.javadbf.DBFUtils;
 import com.linuxense.javadbf.DBFWriter;
+import com.rk.commonmodule.channel.ChannelConstant;
+import com.rk.commonmodule.channel.channelmanager.ChannelManager;
+import com.rk.commonmodule.utils.DataConvertUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,16 +34,76 @@ import me.weyye.hipermission.HiPermission;
 import me.weyye.hipermission.PermissionCallback;
 import me.weyye.hipermission.PermissionItem;
 
+
 public class MainActivity extends Activity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private TextView mContentTextView;
 
+    private ChannelManager.IChannelOpenAndCloseListener mChannelOpenAndCloseListener = new ChannelManager.IChannelOpenAndCloseListener() {
+        @Override
+        public void onOpenFail() {
+
+        }
+
+        @Override
+        public void onOpenSuccess() {
+            Log.i(TAG, "channel open successfully");
+        }
+
+        @Override
+        public void onCloseFail() {
+
+        }
+
+        @Override
+        public void onCloseSuccess() {
+            Log.i(TAG, "channel close successfully");
+        }
+    };
+
+    private ChannelManager.IChannelManagerSendListener mChannelManagerSendListener = new ChannelManager.IChannelManagerSendListener() {
+        @Override
+        public void onChannelSendBegin() {
+            Log.i(TAG, "onChannelSendBegin");
+        }
+
+        @Override
+        public void onChannelSendFail(String error) {
+            Log.i(TAG, "onChannelSendFail, error: " + error);
+        }
+
+        @Override
+        public void onChannelSendSuccess(String succss) {
+            Log.i(TAG, "onChannelSendSuccess");
+        }
+    };
+
+    private ChannelManager.IChannelManagerReceiveListener mChannelManagerReceiveListener = new ChannelManager.IChannelManagerReceiveListener() {
+        @Override
+        public void onChannelReceiveBegin() {
+            Log.i(TAG, "onChannelReceiveBegin");
+        }
+
+        @Override
+        public void onChannelReceiveFail(String error) {
+            Log.i(TAG, "onChannelReceiveFail");
+        }
+
+        @Override
+        public void onChannelReceiveSuccess(byte[] data) {
+            Log.i(TAG, "onChannelReceiveSuccess, data: " + DataConvertUtils.convertByteArrayToString(data, false));
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ChannelManager.getInstance(this).setChannelOpenAndCloseListener(mChannelOpenAndCloseListener);
+        ChannelManager.getInstance(this).setChannelManagerSendListener(mChannelManagerSendListener);
+        ChannelManager.getInstance(this).setChannelManagerReceiveListener(mChannelManagerReceiveListener);
         initView();
         requestPermissions();
 
@@ -47,6 +112,13 @@ public class MainActivity extends Activity {
     private void initView() {
         Log.i(TAG, "initView");
         mContentTextView = (TextView) findViewById(R.id.content);
+        Button testBtn = (Button) findViewById(R.id.test_btn);
+        testBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ChannelManager.getInstance(MainActivity.this).openChannel(ChannelConstant.Channel.CHANNEL_INFRARED);
+            }
+        });
     }
 
     private void readDbf() {
@@ -219,5 +291,17 @@ public class MainActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ChannelManager.getInstance(this).openTty();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        ChannelManager.getInstance(this).closeTty();
     }
 }

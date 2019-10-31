@@ -14,6 +14,8 @@
 #include "ch395.cpp"
 #include "pic32.cpp"
 
+#include "ttyusb.cpp"
+
 #include <android/log.h>
 #define   LOG_TAG    "LOG_TEST"
 #define   LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,LOG_TAG,__VA_ARGS__)
@@ -388,7 +390,7 @@ Java_com_rk_commonmodule_jni_JniMethods_loraClose(JNIEnv *env, jclass type) {
 //读取LoRa数据
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_rk_commonmodule_jni_JniMethods_LoraRead(JNIEnv *env, jclass type,jbyteArray array,jint len) {
+Java_com_rk_commonmodule_jni_JniMethods_loraRead(JNIEnv *env, jclass type,jbyteArray array,jint len) {
     char* buffer = (char *) new char[len];
     int length = LoraRead(buffer,len);
     if(length > 0){
@@ -400,7 +402,7 @@ Java_com_rk_commonmodule_jni_JniMethods_LoraRead(JNIEnv *env, jclass type,jbyteA
 //写入LoRa数据
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_rk_commonmodule_jni_JniMethods_LoraWrite(JNIEnv *env, jclass type,jbyteArray array,jint len) {
+Java_com_rk_commonmodule_jni_JniMethods_loraWrite(JNIEnv *env, jclass type,jbyteArray array,jint len) {
      char* bBuffer=( char*)(env)->GetByteArrayElements(array, 0);
     return LoraWrite(bBuffer,len);
 }
@@ -409,7 +411,7 @@ Java_com_rk_commonmodule_jni_JniMethods_LoraWrite(JNIEnv *env, jclass type,jbyte
 // LoRaSetFrequency
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_rk_commonmodule_jni_JniMethods_LoRaSetFrequency(JNIEnv *env, jclass type,jint freq) {
+Java_com_rk_commonmodule_jni_JniMethods_loraSetFrequency(JNIEnv *env, jclass type,jint freq) {
     LoRaSetFrequency(freq);
     LOGE(" freq = %d",freq);
     return 0;
@@ -419,7 +421,7 @@ Java_com_rk_commonmodule_jni_JniMethods_LoRaSetFrequency(JNIEnv *env, jclass typ
 //LoRaSetPower
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_rk_commonmodule_jni_JniMethods_LoRaSetPower(JNIEnv *env, jclass type,jint power) {
+Java_com_rk_commonmodule_jni_JniMethods_loraSetPower(JNIEnv *env, jclass type,jint power) {
     LoRaSetPower(power);
     LOGE(" power = %d",power);
     return 0;
@@ -429,7 +431,7 @@ Java_com_rk_commonmodule_jni_JniMethods_LoRaSetPower(JNIEnv *env, jclass type,ji
 //LoRaSetBandWidth
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_rk_commonmodule_jni_JniMethods_LoRaSetBandWidth(JNIEnv *env, jclass type,jint bw) {
+Java_com_rk_commonmodule_jni_JniMethods_loraSetBandWidth(JNIEnv *env, jclass type,jint bw) {
     LoRaSetBandWidth(bw);
     LOGE(" bw = %d",bw);
     return 0;
@@ -438,7 +440,7 @@ Java_com_rk_commonmodule_jni_JniMethods_LoRaSetBandWidth(JNIEnv *env, jclass typ
 //LoRaSetSpreadingFactor
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_rk_commonmodule_jni_JniMethods_LoRaSetSpreadingFactor(JNIEnv *env, jclass type,jint factor) {
+Java_com_rk_commonmodule_jni_JniMethods_loraSetSpreadingFactor(JNIEnv *env, jclass type,jint factor) {
     LoRaSetSpreadingFactor(factor);
     LOGE(" factor = %d",factor);
     return 0;
@@ -448,7 +450,7 @@ Java_com_rk_commonmodule_jni_JniMethods_LoRaSetSpreadingFactor(JNIEnv *env, jcla
 //LoRaSetErrorCoding
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_rk_commonmodule_jni_JniMethods_LoRaSetErrorCoding(JNIEnv *env, jclass type,jint value) {
+Java_com_rk_commonmodule_jni_JniMethods_loraSetErrorCoding(JNIEnv *env, jclass type,jint value) {
     LoRaSetErrorCoding(value);
     LOGE(" value = %d",value);
     return 0;
@@ -457,7 +459,7 @@ Java_com_rk_commonmodule_jni_JniMethods_LoRaSetErrorCoding(JNIEnv *env, jclass t
 //LoRaSetPacketCrcOn
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_rk_commonmodule_jni_JniMethods_LoRaSetPacketCrcOn(JNIEnv *env, jclass type,jint value) {
+Java_com_rk_commonmodule_jni_JniMethods_loraSetPacketCrcOn(JNIEnv *env, jclass type,jint value) {
     LoRaSetPacketCrcOn(value);
     LOGE(" value = %d",value);
     return 0;
@@ -467,7 +469,7 @@ Java_com_rk_commonmodule_jni_JniMethods_LoRaSetPacketCrcOn(JNIEnv *env, jclass t
 //LoRaSetPreambleLength
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_rk_commonmodule_jni_JniMethods_LoRaSetPreambleLength(JNIEnv *env, jclass type,jint value) {
+Java_com_rk_commonmodule_jni_JniMethods_loraSetPreambleLength(JNIEnv *env, jclass type,jint value) {
     LoRaSetPreambleLength(value);
     LOGE(" value = %d",value);
     return 0;
@@ -477,7 +479,7 @@ Java_com_rk_commonmodule_jni_JniMethods_LoRaSetPreambleLength(JNIEnv *env, jclas
 //LoRaSetImplicitHeaderOn
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_rk_commonmodule_jni_JniMethods_LoRaSetImplicitHeaderOn(JNIEnv *env, jclass type,jint value) {
+Java_com_rk_commonmodule_jni_JniMethods_loraSetImplicitHeaderOn(JNIEnv *env, jclass type,jint value) {
     LoRaSetImplicitHeaderOn(value);
     LOGE(" value = %d",value);
     return 0;
@@ -487,7 +489,7 @@ Java_com_rk_commonmodule_jni_JniMethods_LoRaSetImplicitHeaderOn(JNIEnv *env, jcl
 //LoRaSetPayloadLength
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_rk_commonmodule_jni_JniMethods_LoRaSetPayloadLength(JNIEnv *env, jclass type,jint value) {
+Java_com_rk_commonmodule_jni_JniMethods_loraSetPayloadLength(JNIEnv *env, jclass type,jint value) {
     LoRaSetPayloadLength(value);
     LOGE(" value = %d",value);
     return 0;
@@ -497,7 +499,7 @@ Java_com_rk_commonmodule_jni_JniMethods_LoRaSetPayloadLength(JNIEnv *env, jclass
 //LoRaSetPaRamp
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_rk_commonmodule_jni_JniMethods_LoRaSetPaRamp(JNIEnv *env, jclass type,jint value) {
+Java_com_rk_commonmodule_jni_JniMethods_loraSetPaRamp(JNIEnv *env, jclass type,jint value) {
     LoRaSetPaRamp(value);
     LOGE(" value = %d",value);
     return 0;
@@ -507,7 +509,7 @@ Java_com_rk_commonmodule_jni_JniMethods_LoRaSetPaRamp(JNIEnv *env, jclass type,j
 //LoRaSetLowDatarateOptimize
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_rk_commonmodule_jni_JniMethods_LoRaSetLowDatarateOptimize(JNIEnv *env, jclass type,jint value) {
+Java_com_rk_commonmodule_jni_JniMethods_loraSetLowDatarateOptimize(JNIEnv *env, jclass type,jint value) {
     LoRaSetLowDatarateOptimize(value);
     LOGE(" value = %d",value);
     return 0;
@@ -516,7 +518,7 @@ Java_com_rk_commonmodule_jni_JniMethods_LoRaSetLowDatarateOptimize(JNIEnv *env, 
 //LoRaSetSymbTimeOut
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_rk_commonmodule_jni_JniMethods_LoRaSetSymbTimeOut(JNIEnv *env, jclass type,jint value) {
+Java_com_rk_commonmodule_jni_JniMethods_loraSetSymbTimeOut(JNIEnv *env, jclass type,jint value) {
     LoRaSetSymbTimeOut(value);
     LOGE(" value = %d",value);
     return 0;
@@ -525,7 +527,7 @@ Java_com_rk_commonmodule_jni_JniMethods_LoRaSetSymbTimeOut(JNIEnv *env, jclass t
 //读取带宽
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_rk_commonmodule_jni_JniMethods_LoRaGetBandWidth(JNIEnv *env, jclass type) {
+Java_com_rk_commonmodule_jni_JniMethods_loraGetBandWidth(JNIEnv *env, jclass type) {
     return LoRaGetBandWidth();
 //    return 0;
 }
@@ -533,7 +535,7 @@ Java_com_rk_commonmodule_jni_JniMethods_LoRaGetBandWidth(JNIEnv *env, jclass typ
 //读取扩频因子
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_rk_commonmodule_jni_JniMethods_LoRaGetSpreadingFactor(JNIEnv *env, jclass type) {
+Java_com_rk_commonmodule_jni_JniMethods_loraGetSpreadingFactor(JNIEnv *env, jclass type) {
     return LoRaGetSpreadingFactor();
 //    return 0;
 }
@@ -541,7 +543,7 @@ Java_com_rk_commonmodule_jni_JniMethods_LoRaGetSpreadingFactor(JNIEnv *env, jcla
 //读取中心频率
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_rk_commonmodule_jni_JniMethods_LoRaGetFrequency(JNIEnv *env, jclass type) {
+Java_com_rk_commonmodule_jni_JniMethods_loraGetFrequency(JNIEnv *env, jclass type) {
     return LoRaGetFrequency();
 //    return 0;
 }
@@ -629,6 +631,46 @@ JNIEXPORT jint JNICALL
 Java_com_rk_commonmodule_jni_JniMethods_readSecurityUnit(JNIEnv *env, jclass type,jbyteArray array,jint len) {
     char* buffer = (char *) new char[len];
     int length = SecurityUnit::getInstance()->RecvData(buffer, 0, 1024);
+    if(length > 0){
+        (*env).SetByteArrayRegion(array, 0, length, (jbyte*)buffer);
+    }
+    return length;
+}
+
+//载波口 打开
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_rk_commonmodule_jni_JniMethods_ttyUSBOpen(JNIEnv *env, jclass type,jint baud) {
+    int i = ttyUSBOpen(baud);
+    LOGE("载波口 %d", i);
+    return i;
+}
+
+//载波口 关闭
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_rk_commonmodule_jni_JniMethods_ttyUSBClose(JNIEnv *env, jclass type) {
+    int i = ttyUSBClose();
+    LOGE("载波口 %d", i);
+    return i;
+}
+
+
+//载波口  发送数据
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_rk_commonmodule_jni_JniMethods_ttyUSBWrite(JNIEnv *env, jclass type,jbyteArray array,jint len) {
+    unsigned char* bBuffer=(unsigned char*)(env)->GetByteArrayElements(array, 0);
+    return ttyUSBWrite(bBuffer,len);
+}
+
+
+//载波口 读取数据
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_rk_commonmodule_jni_JniMethods_ttyUSBRead(JNIEnv *env, jclass type,jbyteArray array,jint len) {
+    unsigned char* buffer = (unsigned char *) new char[len];
+    int length = ttyUSBRead(buffer,1024);
     if(length > 0){
         (*env).SetByteArrayRegion(array, 0, length, (jbyte*)buffer);
     }
