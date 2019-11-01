@@ -19,7 +19,9 @@ import com.linuxense.javadbf.DBFReader;
 import com.linuxense.javadbf.DBFUtils;
 import com.linuxense.javadbf.DBFWriter;
 import com.rk.commonmodule.channel.ChannelConstant;
+import com.rk.commonmodule.channel.InfraredChannel;
 import com.rk.commonmodule.channel.channelmanager.ChannelManager;
+import com.rk.commonmodule.transfer.TransferManager;
 import com.rk.commonmodule.utils.DataConvertUtils;
 
 import java.io.File;
@@ -29,6 +31,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import me.weyye.hipermission.HiPermission;
 import me.weyye.hipermission.PermissionCallback;
@@ -97,6 +100,38 @@ public class MainActivity extends Activity {
         }
     };
 
+    private TransferManager.IChannelDataTransferListener mChannelDataTransferListener = new TransferManager.IChannelDataTransferListener() {
+        @Override
+        public void onSendBegin(String msg) {
+            Log.i(TAG, "onSendBegin, msg: " + msg);
+        }
+
+        @Override
+        public void onSendFail(String msg) {
+            Log.i(TAG, "onSendFail, msg: " + msg);
+        }
+
+        @Override
+        public void onSendSuccess(String msg) {
+            Log.i(TAG, "onSendSuccess, msg: " + msg);
+        }
+
+        @Override
+        public void onReceiveBegin(String msg) {
+            Log.i(TAG, "onReceiveBegin, msg: " + msg);
+        }
+
+        @Override
+        public void onReceiveFail(String msg) {
+            Log.i(TAG, "onReceiveFail, msg: " + msg);
+        }
+
+        @Override
+        public void onReceiveSuccess(byte[] data) {
+            Log.i(TAG, "onReceiveSuccess, data: " + DataConvertUtils.convertByteArrayToString(data, false));
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,6 +139,7 @@ public class MainActivity extends Activity {
         ChannelManager.getInstance(this).setChannelOpenAndCloseListener(mChannelOpenAndCloseListener);
         ChannelManager.getInstance(this).setChannelManagerSendListener(mChannelManagerSendListener);
         ChannelManager.getInstance(this).setChannelManagerReceiveListener(mChannelManagerReceiveListener);
+        TransferManager.getInstance(this).setChannelDataTransferListener(mChannelDataTransferListener);
         initView();
         requestPermissions();
 
@@ -111,12 +147,49 @@ public class MainActivity extends Activity {
 
     private void initView() {
         Log.i(TAG, "initView");
-        mContentTextView = (TextView) findViewById(R.id.content);
-        Button testBtn = (Button) findViewById(R.id.test_btn);
+        mContentTextView = (TextView) findViewById(R.id.meter_address);
+        Button testBtn = (Button) findViewById(R.id.start_IR_btn);
         testBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ChannelManager.getInstance(MainActivity.this).openChannel(ChannelConstant.Channel.CHANNEL_INFRARED);
+            }
+        });
+        Button readMeterAddrBtn = (Button) findViewById(R.id.read_meter_address_btn);
+        //读表地址
+        //68 aa aa aa aa aa aa 68 11 04 35 37 33 37 b7 16
+        //fe fe fe fe 68 91 40 02 01 18 07 68 91 0a 35 37 33 37 c4 73 35 34 4b 3a 59 16
+
+        readMeterAddrBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String frameString = "68aaaaaaaaaaaa68110435373337b716";
+                ArrayList<Byte> frameList = DataConvertUtils.convertHexStringToByteArray(frameString, frameString.length(),false);
+                byte[] frame = new byte[frameList.size()];
+                for (int i = 0; i < frame.length; i++) {
+                    frame[i] = frameList.get(i);
+                }
+                TransferManager.getInstance(MainActivity.this).setChannel(new InfraredChannel());
+                TransferManager.getInstance(MainActivity.this).send(frame, frame.length);
+
+            }
+        });
+
+        //读正向有功总电能
+        //68 91 40 02 01 18 07 68 11 04 33 33 34 33 a5 16
+        //FE FE FE FE 68 91 40 02 01 18 07 68 91 08 33 33 34 33 33 33 33 33 F5 16
+        Button readPositiveActivePower = (Button) findViewById(R.id.read_day_freezing_btn);
+        readPositiveActivePower.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                String frameString = "6891400201180768110433333433a516";
+                ArrayList<Byte> frameList = DataConvertUtils.convertHexStringToByteArray(frameString, frameString.length(),false);
+                byte[] frame = new byte[frameList.size()];
+                for (int i = 0; i < frame.length; i++) {
+                    frame[i] = frameList.get(i);
+                }
+                TransferManager.getInstance(MainActivity.this).setChannel(new InfraredChannel());
+                TransferManager.getInstance(MainActivity.this).send(frame, frame.length);
             }
         });
     }

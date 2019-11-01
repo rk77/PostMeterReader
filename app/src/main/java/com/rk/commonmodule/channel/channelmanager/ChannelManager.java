@@ -31,7 +31,7 @@ public class ChannelManager {
     private IChannelManagerSendListener mChannelManagerSendListener;
     private IChannelManagerReceiveListener mChannelManagerReceiveListener;
 
-    private enum ChannelManagerStatus {
+    public enum ChannelManagerStatus {
         IDLE,
         BUSY,
     }
@@ -61,6 +61,7 @@ public class ChannelManager {
                 case CLOSE_TTY_MSG:
                     JniMethods.ttyClose();
                     mIsChannelManagerOpen = false;
+                    mStatus = ChannelManagerStatus.IDLE;
                     if (mChannelOpenAndCloseListener != null) {
                         mChannelOpenAndCloseListener.onCloseSuccess();
                     }
@@ -96,12 +97,14 @@ public class ChannelManager {
                             int tryTime = 5;
                             for (int i = 0; i < 30; i++) {
                                 int length = JniMethods.readMGR(data, data.length);
-                                if (length == 0) {
+                                Log.i(TAG, "handleMessage, SEND_MSG, length: " + length + ", i: " + i);
+                                if (length <= 0) {
                                     if (tryTime > 0) {
                                         tryTime = tryTime - 1;
                                         Thread.sleep(200);
                                         continue;
                                     } else {
+                                        Log.i(TAG, "handleMessage, SEND_MSG, i: " + i);
                                         break;
                                     }
                                 }
@@ -130,13 +133,13 @@ public class ChannelManager {
                     } catch (Exception e) {
                         Log.e(TAG, "handleMessage, error: " + e.getMessage());
                     }
-                    mStatus = ChannelManagerStatus.IDLE;
                     break;
                 case RECEIVE_MSG:
                     break;
                 default:
                     super.handleMessage(msg);
             }
+            mStatus = ChannelManagerStatus.IDLE;
 
         }
     }
@@ -245,6 +248,10 @@ public class ChannelManager {
             default:
                 break;
         }
+    }
+
+    public ChannelManagerStatus getCurrentStatus() {
+        return mStatus;
     }
 
     private void openIR() {

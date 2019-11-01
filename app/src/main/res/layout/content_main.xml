@@ -1,29 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    android:orientation="vertical"
     tools:context=".MainActivity"
     tools:showIn="@layout/activity_main">
 
     <TextView
-        android:id="@+id/content"
+        android:id="@+id/meter_address"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:text="表地址"
+        />
+    <TextView
+        android:id="@+id/meter_day_freezing"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="日冻结"
+        />
     <Button
-        android:id="@+id/test_btn"
+        android:id="@+id/start_IR_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Star IR"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
+        />
+    <Button
+        android:id="@+id/read_meter_address_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Read Meter Address"
+        />
+    <Button
+        android:id="@+id/read_day_freezing_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Read Day Freezing"
         />
 
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>
