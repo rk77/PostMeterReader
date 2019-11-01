@@ -224,12 +224,7 @@ public class ChannelManager {
                 mChannelManagerSendListener.onChannelSendFail("Channel is not open");
             }
         }
-        if (mStatus == ChannelManagerStatus.BUSY) {
-            if (mChannelManagerSendListener != null) {
-                mChannelManagerSendListener.onChannelSendFail("Channel is busy");
-            }
-        }
-        mStatus = ChannelManagerStatus.BUSY;
+
         mCurrentChannel = channel;
         switch (channel) {
             case CHANNEL_NONE:
@@ -279,6 +274,7 @@ public class ChannelManager {
             }
             return;
         }
+        mStatus = ChannelManagerStatus.BUSY;
         if (mNonUIHandler != null) {
             mNonUIHandler.removeMessages(NonUIHandler.SEND_MSG);
             mNonUIHandler.sendMessage(mNonUIHandler.obtainMessage(NonUIHandler.SEND_MSG, frame));
