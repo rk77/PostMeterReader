@@ -273,6 +273,12 @@ public class ChannelManager {
 
     private void sendFrame(byte[] frame) {
         Log.i(TAG, "sendFrame");
+        if (mStatus == ChannelManagerStatus.BUSY) {
+            if (mChannelManagerSendListener != null) {
+                mChannelManagerSendListener.onChannelSendFail("Channel manager is busy, not send");
+            }
+            return;
+        }
         if (mNonUIHandler != null) {
             mNonUIHandler.removeMessages(NonUIHandler.SEND_MSG);
             mNonUIHandler.sendMessage(mNonUIHandler.obtainMessage(NonUIHandler.SEND_MSG, frame));

@@ -179,10 +179,13 @@ public class TransferManager {
     }
 
     public void send(byte[] data, int length) {
-        mStatus = STATUS.BYZY;
-        mNonUIHandler.removeMessages(NonUIHandler.CHANNEL_SEND_MSG);
-        mNonUIHandler.sendMessage(mNonUIHandler.obtainMessage(NonUIHandler.CHANNEL_SEND_MSG, data));
-
+        if (mStatus == STATUS.IDLE) {
+            mStatus = STATUS.BYZY;
+            mNonUIHandler.removeMessages(NonUIHandler.CHANNEL_SEND_MSG);
+            mNonUIHandler.sendMessage(mNonUIHandler.obtainMessage(NonUIHandler.CHANNEL_SEND_MSG, data));
+        } else {
+            Log.i(TAG, "send, not send because of channel buzy");
+        }
     }
 
     public void receive() {
