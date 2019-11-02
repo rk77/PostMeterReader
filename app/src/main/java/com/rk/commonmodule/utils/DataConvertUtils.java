@@ -42,6 +42,36 @@ public class DataConvertUtils {
         return byteArray;
     }
 
+    public static final byte[] getSubByteArray(byte[] data, int begin, int end) {
+        if (data == null || data.length <= 0) {
+            return null;
+        }
+        if (begin > end || begin > data.length - 1 || end > data.length - 1) {
+            return null;
+        }
+
+        byte[] subData = new byte[end - begin + 1];
+        for (int i = begin; i <= end; i++) {
+            subData[i - begin] = data[i];
+        }
+        return subData;
+
+    }
+
+    public static final String convertByteArrayToString(byte[] data, int begin, int end, boolean revertTo) {
+        if (data == null || data.length <= 0) {
+            return null;
+        }
+        if (begin > end || begin > data.length - 1 || end > data.length - 1) {
+            return null;
+        }
+        byte[] subData = new byte[end - begin + 1];
+        for (int i = begin; i <= end; i++) {
+            subData[i - begin] = data[i];
+        }
+        return convertByteArrayToString(subData, revertTo);
+    }
+
     public static final String convertByteArrayToString(byte[] data, boolean revertTo) {
         Log.i(TAG, "convertByteArrayToString");
         if (data == null || data.length <= 0) {

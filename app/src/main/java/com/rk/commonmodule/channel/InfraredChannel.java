@@ -1,6 +1,5 @@
 package com.rk.commonmodule.channel;
 
-import android.content.IntentFilter;
 import android.util.Log;
 
 import com.rk.commonmodule.jni.JniMethods;

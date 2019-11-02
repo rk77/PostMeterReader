@@ -21,6 +21,9 @@ import com.linuxense.javadbf.DBFWriter;
 import com.rk.commonmodule.channel.ChannelConstant;
 import com.rk.commonmodule.channel.InfraredChannel;
 import com.rk.commonmodule.channel.channelmanager.ChannelManager;
+import com.rk.commonmodule.protocol.protocol645.y2007.Protocol645Constant;
+import com.rk.commonmodule.protocol.protocol645.y2007.Protocol645FrameMaker;
+import com.rk.commonmodule.protocol.protocol645.y2007.Protocol645FramePaser;
 import com.rk.commonmodule.transfer.TransferManager;
 import com.rk.commonmodule.utils.DataConvertUtils;
 
@@ -30,6 +33,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -129,6 +133,20 @@ public class MainActivity extends Activity {
         @Override
         public void onReceiveSuccess(byte[] data) {
             Log.i(TAG, "onReceiveSuccess, data: " + DataConvertUtils.convertByteArrayToString(data, false));
+            Map map = Protocol645FramePaser.PROTOCOL_645_FRAME_PASER.parse(data);
+
+            if (map != null&& map.containsKey(Protocol645Constant.ControlCode.READ_ADDRESS_VALUE_KEY)) {
+                final String address = (String) map.get(Protocol645Constant.ControlCode.READ_ADDRESS_VALUE_KEY);
+                Log.i(TAG, "onReceiveSuccess, get meter address： " + address);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mContentTextView != null) {
+                            mContentTextView.setText(address);
+                        }
+                    }
+                });
+            }
         }
     };
 
@@ -156,6 +174,8 @@ public class MainActivity extends Activity {
             }
         });
         Button readMeterAddrBtn = (Button) findViewById(R.id.read_meter_address_btn);
+
+        //TODO: just test buttons.
         //读表地址
         //68 aa aa aa aa aa aa 68 11 04 35 37 33 37 b7 16
         //fe fe fe fe 68 91 40 02 01 18 07 68 91 0a 35 37 33 37 c4 73 35 34 4b 3a 59 16
@@ -163,14 +183,15 @@ public class MainActivity extends Activity {
         readMeterAddrBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String frameString = "68aaaaaaaaaaaa68110435373337b716";
-                ArrayList<Byte> frameList = DataConvertUtils.convertHexStringToByteArray(frameString, frameString.length(),false);
-                byte[] frame = new byte[frameList.size()];
-                for (int i = 0; i < frame.length; i++) {
-                    frame[i] = frameList.get(i);
-                }
-                TransferManager.getInstance(MainActivity.this).setChannel(new InfraredChannel());
-                TransferManager.getInstance(MainActivity.this).send(frame, frame.length);
+//                String frameString = "68aaaaaaaaaaaa68110435373337b716";
+//                ArrayList<Byte> frameList = DataConvertUtils.convertHexStringToByteArray(frameString, frameString.length(),false);
+//                byte[] frame = new byte[frameList.size()];
+//                for (int i = 0; i < frame.length; i++) {
+//                    frame[i] = frameList.get(i);
+//                }
+//                TransferManager.getInstance(MainActivity.this).setChannel(new InfraredChannel());
+//                TransferManager.getInstance(MainActivity.this).send(frame, frame.length);
+                requestMeterAddress();
 
             }
         });
@@ -182,14 +203,15 @@ public class MainActivity extends Activity {
         readPositiveActivePower.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                String frameString = "6891400201180768110433333433a516";
-                ArrayList<Byte> frameList = DataConvertUtils.convertHexStringToByteArray(frameString, frameString.length(),false);
-                byte[] frame = new byte[frameList.size()];
-                for (int i = 0; i < frame.length; i++) {
-                    frame[i] = frameList.get(i);
-                }
-                TransferManager.getInstance(MainActivity.this).setChannel(new InfraredChannel());
-                TransferManager.getInstance(MainActivity.this).send(frame, frame.length);
+//                String frameString = "6891400201180768110433333433a516";
+//                ArrayList<Byte> frameList = DataConvertUtils.convertHexStringToByteArray(frameString, frameString.length(),false);
+//                byte[] frame = new byte[frameList.size()];
+//                for (int i = 0; i < frame.length; i++) {
+//                    frame[i] = frameList.get(i);
+//                }
+//                TransferManager.getInstance(MainActivity.this).setChannel(new InfraredChannel());
+//                TransferManager.getInstance(MainActivity.this).send(frame, frame.length);
+                requestPositiveActiveTotalPowser();
             }
         });
     }
@@ -376,5 +398,28 @@ public class MainActivity extends Activity {
     protected void onPause() {
         super.onPause();
         ChannelManager.getInstance(this).closeTty();
+    }
+
+    private void requestMeterAddress() {
+        Map map = new HashMap();
+        map.put(Protocol645Constant.ADDRESS, "AAAAAAAAAAAA");
+        map.put(Protocol645Constant.CTRL_CODE, Protocol645Constant.ControlCode.READ_ADDRESS_REQUEST);
+        map.put(Protocol645Constant.DATA_LENGTH, 0);
+        byte[] frame = Protocol645FrameMaker.PROTOCOL_645_FRAME_MAKER.makeFrame(map);
+        Log.i(TAG, "requestMeterAddress, frame: " + DataConvertUtils.convertByteArrayToString(frame, false));
+        TransferManager.getInstance(MainActivity.this).setChannel(new InfraredChannel());
+        TransferManager.getInstance(MainActivity.this).send(frame, frame.length);
+    }
+
+    private void requestPositiveActiveTotalPowser() {
+        Map map = new HashMap();
+        map.put(Protocol645Constant.ADDRESS, mContentTextView.getText().toString());
+        map.put(Protocol645Constant.CTRL_CODE, Protocol645Constant.ControlCode.READ_DATA_REQUEST);
+        map.put(Protocol645Constant.DATA_LENGTH, 4);
+        map.put(Protocol645Constant.DATA_IDENTIFIER, new byte[]{0x00, 0x01, 0x00, 0x00});
+        byte[] frame = Protocol645FrameMaker.PROTOCOL_645_FRAME_MAKER.makeFrame(map);
+        Log.i(TAG, "requestMeterAddress, frame: " + DataConvertUtils.convertByteArrayToString(frame, false));
+        TransferManager.getInstance(MainActivity.this).setChannel(new InfraredChannel());
+        TransferManager.getInstance(MainActivity.this).send(frame, frame.length);
     }
 }

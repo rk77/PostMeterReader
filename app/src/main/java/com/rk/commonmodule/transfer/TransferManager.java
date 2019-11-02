@@ -158,7 +158,15 @@ public class TransferManager {
 
     public void setChannel(IChannel channel) {
         if (mStatus == STATUS.IDLE) {
-            mChannel = channel;
+            if (mChannel != null) {
+                if (mChannel.getChannelType() != channel.getChannelType()) {
+                    mChannel = channel;
+                }
+            } else {
+                mChannel = channel;
+            }
+        } else {
+
         }
     }
 
