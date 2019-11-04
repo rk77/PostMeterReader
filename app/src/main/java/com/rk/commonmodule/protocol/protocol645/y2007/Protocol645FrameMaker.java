@@ -35,7 +35,11 @@ public enum Protocol645FrameMaker {
             return null;
         }
         frameArray.add(Protocol645Constant.FRAME_BEGIN);
-        frameArray.addAll(DataConvertUtils.convertHexStringToByteArray(address, address.length(), true));
+        ArrayList<Byte> addressArray = DataConvertUtils.convertHexStringToByteArrayList(address, address.length(), true);
+        if (addressArray == null || addressArray.size() <= 0) {
+            return null;
+        }
+        frameArray.addAll(DataConvertUtils.convertHexStringToByteArrayList(address, address.length(), true));
         frameArray.add(Protocol645Constant.FRAME_BEGIN);
         byte ctrlCode = (byte) map.get(Protocol645Constant.CTRL_CODE);
         frameArray.add(ctrlCode);
@@ -56,13 +60,11 @@ public enum Protocol645FrameMaker {
                 }
                 byte dataLength = (byte) dataID.length;
                 frameArray.add(dataLength);
-
-                ArrayList<Byte> sendDataArray = new ArrayList(dataLength);
+                // add data identifier to array list.
                 for (int i = 0; i < dataLength; i++) {
                     // revert and plus 0x33
-                    sendDataArray.add(dataLength - 1 - i, (byte) (dataID[i] + 0x33));
+                    frameArray.add((byte) (dataID[dataLength - 1 - i] + 0x33));
                 }
-                frameArray.addAll(sendDataArray);
                 byte cs1 = calculateCs(frameArray);
                 frameArray.add(cs1);
                 frameArray.add(Protocol645Constant.FRAME_END);

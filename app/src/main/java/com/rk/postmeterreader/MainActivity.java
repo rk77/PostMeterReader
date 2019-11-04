@@ -47,6 +47,7 @@ public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private TextView mContentTextView;
+    private TextView mMeterDayFreezingTextView;
 
     private ChannelManager.IChannelOpenAndCloseListener mChannelOpenAndCloseListener = new ChannelManager.IChannelOpenAndCloseListener() {
         @Override
@@ -146,6 +147,17 @@ public class MainActivity extends Activity {
                         }
                     }
                 });
+            } else if (map != null&& map.containsKey(Protocol645Constant.DataIdentifier.POSITIVE_ACTIVE__TOTAL_POWER_KEY)) {
+                final String value = (String) map.get(Protocol645Constant.DataIdentifier.POSITIVE_ACTIVE__TOTAL_POWER_KEY);
+                Log.i(TAG, "onReceiveSuccess, POSITIVE_ACTIVE__TOTAL_POW： " + value);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mMeterDayFreezingTextView != null) {
+                            mMeterDayFreezingTextView.setText(value);
+                        }
+                    }
+                });
             }
         }
     };
@@ -166,6 +178,7 @@ public class MainActivity extends Activity {
     private void initView() {
         Log.i(TAG, "initView");
         mContentTextView = (TextView) findViewById(R.id.meter_address);
+        mMeterDayFreezingTextView = (TextView) findViewById(R.id.meter_day_freezing);
         Button testBtn = (Button) findViewById(R.id.start_IR_btn);
         testBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -420,6 +433,10 @@ public class MainActivity extends Activity {
         byte[] frame = Protocol645FrameMaker.PROTOCOL_645_FRAME_MAKER.makeFrame(map);
         Log.i(TAG, "requestMeterAddress, frame: " + DataConvertUtils.convertByteArrayToString(frame, false));
         TransferManager.getInstance(MainActivity.this).setChannel(new InfraredChannel());
+        if (frame == null || frame.length <= 0) {
+            Log.i(TAG, "requestPositiveActiveTotalPowser, no frame");
+            return;
+        }
         TransferManager.getInstance(MainActivity.this).send(frame, frame.length);
     }
 }

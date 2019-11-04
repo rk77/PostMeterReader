@@ -34,11 +34,36 @@ public enum  Protocol645FramePaser {
                     data[i] = (byte) (data[i] - (byte) 0x33);
                 }
             }
-            map.put(Protocol645Constant.DATA_LENGTH, data);
+            map.put(Protocol645Constant.DATA, data);
             switch (ctrlCode) {
                 case Protocol645Constant.ControlCode.READ_ADDRESS_RESPOND_OK:
                     map.put(Protocol645Constant.ControlCode.READ_ADDRESS_VALUE_KEY, DataConvertUtils.convertByteArrayToString(data, true));
                 case Protocol645Constant.ControlCode.READ_DATA_RESPOND_OK:
+                    byte[] dataID = new byte[4];
+                    for (int i = 0; i < 4; i++) {
+                        dataID[i] = data[4 -1 - i];
+                    }
+                    map.put(Protocol645Constant.DATA_IDENTIFIER, dataID);
+
+                    switch (DataConvertUtils.convertByteArrayToString(dataID, false)) {
+                        case Protocol645Constant.DataIdentifier.POSITIVE_ACTIVE_TOTAL_POWER_DI:
+                            if (data.length == 8) {
+                                StringBuilder sb = new StringBuilder();
+                                for (int i = 4; i < 8; i++) {
+                                    sb.insert(0, DataConvertUtils.convertByteToString(data[i]));
+                                    if (i == 4) {
+                                        sb.insert(0, ".");
+                                    }
+                                }
+                                map.put(Protocol645Constant.DataIdentifier.POSITIVE_ACTIVE__TOTAL_POWER_KEY, sb.toString());
+                            }
+
+                            break;
+                        default:
+                            break;
+
+                    }
+
                     break;
                 case Protocol645Constant.ControlCode.READ_DATA_RESPOND_ERROR:
                     break;
